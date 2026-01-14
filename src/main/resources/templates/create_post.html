@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Post - ExcelR Blog</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdn.ckeditor.com/ckeditor5/39.0.1/classic/ckeditor.js"></script>
+    <style>
+        /* MATCHING DESIGNER THEME: DEEP INDIGO & LUXE GOLD */
+        :root {
+            --primary-accent: #6366f1;
+            --secondary-accent: #f59e0b;
+            --dark-bg: #0f172a;
+            --card-glass: rgba(255, 255, 255, 0.96);
+            --input-bg: #f8fafc;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            font-family: 'Poppins', sans-serif !important;
+            /* Consistent Slate & Mesh Gradient */
+            background-color: #0f172a !important;
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.15) 0, transparent 50%), 
+                radial-gradient(at 100% 100%, rgba(245, 158, 11, 0.1) 0, transparent 50%) !important;
+            min-height: 100vh !important;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: url('https://www.transparenttextures.com/patterns/cubes.png');
+            opacity: 0.05;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .navbar {
+            background: rgba(15, 23, 42, 0.8) !important;
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+            padding: 12px 0 !important;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .navbar-brand {
+            font-size: 1.8rem !important;
+            color: #fff !important;
+        }
+
+        .navbar-brand i {
+            color: var(--primary-accent) !important;
+        }
+
+        .nav-link {
+            color: rgba(255, 255, 255, 0.8) !important;
+            font-weight: 500 !important;
+            margin: 0 10px !important;
+            padding: 8px 20px !important;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-link:hover {
+            color: var(--primary-accent) !important;
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .main-container {
+            position: relative;
+            z-index: 1;
+            flex: 1;
+            padding: 60px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .form-card {
+            background: var(--card-glass) !important;
+            backdrop-filter: blur(20px);
+            border-radius: 24px !important;
+            padding: 45px !important;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5) !important;
+            border: 1px solid rgba(255, 255, 255, 0.3) !important;
+            width: 100%;
+            max-width: 850px;
+            animation: slideUp 0.7s cubic-bezier(0.19, 1, 0.22, 1);
+        }
+
+        .form-header {
+            text-align: center;
+            margin-bottom: 35px;
+        }
+
+        .form-header i {
+            font-size: 2.8rem;
+            color: var(--primary-accent);
+            margin-bottom: 15px;
+            display: inline-block;
+        }
+
+        .form-header h2 {
+            color: var(--dark-bg) !important;
+            font-weight: 800 !important;
+            letter-spacing: -0.5px;
+        }
+
+        .form-group label {
+            font-weight: 600;
+            color: #475569;
+            font-size: 0.9rem;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .form-group label i {
+            color: var(--primary-accent);
+        }
+
+        .form-group input {
+            width: 100% !important;
+            padding: 14px 18px !important;
+            border: 2px solid #e2e8f0 !important;
+            border-radius: 12px !important;
+            background: var(--input-bg) !important;
+            transition: all 0.3s ease !important;
+        }
+
+        .form-group input:focus {
+            border-color: var(--primary-accent) !important;
+            background: #fff !important;
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1) !important;
+            outline: none !important;
+        }
+
+        /* Styling the CKEditor container to match */
+        .ck-editor__animated-gradient {
+            border-radius: 12px !important;
+        }
+        
+        .ck.ck-editor__main>.ck-editor__editable {
+            background: var(--input-bg) !important;
+            border-radius: 0 0 12px 12px !important;
+            min-height: 250px !important;
+        }
+
+        .ck.ck-toolbar {
+            background: #f1f5f9 !important;
+            border-radius: 12px 12px 0 0 !important;
+            border: 2px solid #e2e8f0 !important;
+        }
+
+        .submit-btn {
+            width: 100% !important;
+            background: var(--dark-bg) !important;
+            border: none !important;
+            border-radius: 12px !important;
+            padding: 16px !important;
+            color: white !important;
+            font-weight: 700 !important;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            transition: all 0.3s ease !important;
+            margin-top: 15px;
+        }
+
+        .submit-btn:hover {
+            background: var(--primary-accent) !important;
+            transform: translateY(-2px);
+            box-shadow: 0 12px 20px -5px rgba(99, 102, 241, 0.4) !important;
+        }
+
+        .back-link {
+            text-align: center;
+            margin-top: 25px;
+        }
+
+        .back-link a {
+            color: #64748b !important;
+            font-weight: 600;
+            transition: 0.3s;
+        }
+
+        .back-link a:hover {
+            color: var(--primary-accent) !important;
+        }
+
+        .footer {
+            background: rgba(15, 23, 42, 0.9) !important;
+            padding: 30px 0 !important;
+            color: #94a3b8 !important;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg">
+        <div class="container">
+            <a class="navbar-brand" href="/">
+                <i class="fas fa-blog"></i>
+            </a>
+            <div class="navbar-nav ml-auto">
+                <a class="nav-link" th:href="@{/dashboard}">
+                    <i class="fas fa-home"></i> Dashboard
+                </a>
+                <a class="nav-link" th:href="@{/create}" style="color: #6366f1 !important;">
+                    <i class="fas fa-plus"></i> New Post
+                </a>
+                <a class="nav-link" th:href="@{/logout}">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="main-container">
+        <div class="form-card">
+            <div class="form-header">
+                <i class="fas fa-edit"></i>
+                <h2>Create New Post</h2>
+            </div>
+
+            <form th:action="@{/create}" th:object="${post}" method="post" id="createPostForm">
+                <div class="form-group">
+                    <label for="title"><i class="fas fa-heading"></i> Title</label>
+                    <input type="text" id="title" th:field="*{title}" placeholder="Give your post a catchy title" required />
+                </div>
+
+                <div class="form-group">
+                    <label for="description"><i class="fas fa-align-left"></i> Short Description</label>
+                    <input type="text" id="description" th:field="*{description}" placeholder="A brief summary for your readers" required />
+                </div>
+
+                <div class="form-group">
+                    <label for="content"><i class="fas fa-file-alt"></i> Content</label>
+                    <textarea id="content" th:field="*{content}" placeholder="Enter post content"></textarea>
+                </div>
+
+                <button type="submit" class="submit-btn">
+                    <i class="fas fa-paper-plane"></i> Create Post
+                </button>
+            </form>
+
+            <div class="back-link">
+                <a th:href="@{/dashboard}"><i class="fas fa-arrow-left"></i> Back to Dashboard</a>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="container text-center">
+            <p>Copyright © 2023 <a href="#" style="color: #fff;">anilkumarlaghumavarapu</a>. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        let editorInstance;
+        document.addEventListener('DOMContentLoaded', () => {
+            ClassicEditor
+                .create(document.querySelector('#content'))
+                .then(editor => {
+                    editorInstance = editor;
+                })
+                .catch(error => {
+                    console.error("CKEditor initialization failed:", error);
+                });
+
+            document.getElementById('createPostForm').addEventListener('submit', function (e) {
+                if (editorInstance) {
+                    const contentData = editorInstance.getData().trim();
+                    if (!contentData) {
+                        alert("Content is required.");
+                        e.preventDefault();
+                        return;
+                    }
+                    document.querySelector('#content').value = contentData;
+                }
+            });
+        });
+    </script>
+</body>
+</html>

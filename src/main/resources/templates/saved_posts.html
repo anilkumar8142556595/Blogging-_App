@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Saved Posts - ExcelR Blog</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        /* MATCHING DESIGNER THEME: DEEP INDIGO & LUXE GOLD */
+        :root {
+            --primary-accent: #6366f1; /* Modern Indigo */
+            --secondary-accent: #f59e0b; /* Soft Gold */
+            --dark-bg: #0f172a;
+            --text-muted: #64748b;
+            --card-glass: rgba(255, 255, 255, 0.94);
+            --danger-red: #ef4444;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            font-family: 'Poppins', sans-serif !important;
+            /* Consistent Slate & Mesh Gradient */
+            background-color: #0f172a !important;
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.15) 0, transparent 50%), 
+                radial-gradient(at 100% 100%, rgba(245, 158, 11, 0.1) 0, transparent 50%) !important;
+            min-height: 100vh !important;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Ambient light texture */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: url('https://www.transparenttextures.com/patterns/cubes.png');
+            opacity: 0.05;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .navbar {
+            background: rgba(15, 23, 42, 0.8) !important;
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+            padding: 12px 0 !important;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .navbar-brand {
+            font-size: 1.8rem !important;
+            color: #fff !important;
+        }
+
+        .navbar-brand i {
+            color: var(--primary-accent) !important;
+        }
+
+        .nav-link {
+            color: rgba(255, 255, 255, 0.8) !important;
+            font-weight: 500 !important;
+            margin: 0 10px !important;
+            padding: 8px 20px !important;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-link:hover {
+            color: var(--primary-accent) !important;
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .main-container {
+            position: relative;
+            z-index: 1;
+            flex: 1;
+            padding: 60px 20px;
+        }
+
+        .page-header {
+            text-align: center;
+            color: white;
+            margin-bottom: 50px;
+            animation: fadeInDown 0.8s ease;
+        }
+
+        .page-header h1 {
+            font-size: 3rem;
+            font-weight: 800;
+            letter-spacing: -1px;
+            margin-bottom: 10px;
+        }
+
+        .page-header h1 i {
+            color: var(--primary-accent);
+            margin-right: 12px;
+        }
+
+        .page-header p {
+            color: #94a3b8;
+            font-size: 1.1rem;
+        }
+
+        .posts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+            gap: 30px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .post-card {
+            background: var(--card-glass) !important;
+            backdrop-filter: blur(20px);
+            border-radius: 24px !important;
+            padding: 35px !important;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1) !important;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border: 1px solid rgba(255, 255, 255, 0.3) !important;
+            animation: fadeInUp 0.6s ease both;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .post-card:hover {
+            transform: translateY(-12px);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4) !important;
+            border-color: var(--primary-accent) !important;
+        }
+
+        .post-title {
+            font-size: 1.6rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            line-height: 1.3;
+        }
+
+        .post-title a {
+            color: var(--dark-bg);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .post-title a:hover {
+            color: var(--primary-accent);
+        }
+
+        .post-description {
+            color: #475569;
+            margin-bottom: 20px;
+            line-height: 1.6;
+            flex-grow: 1;
+        }
+
+        .post-date {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            margin-bottom: 25px;
+            font-weight: 500;
+            background: #f1f5f9;
+            display: inline-flex;
+            padding: 5px 15px;
+            border-radius: 20px;
+            align-self: flex-start;
+        }
+
+        .post-date i {
+            color: var(--primary-accent);
+            margin-right: 6px;
+        }
+
+        .post-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        .read-more {
+            flex: 1;
+            padding: 12px 20px;
+            background: var(--dark-bg);
+            color: white;
+            text-decoration: none;
+            border-radius: 12px;
+            text-align: center;
+            font-weight: 700;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .read-more:hover {
+            background: var(--primary-accent);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(99, 102, 241, 0.3);
+            text-decoration: none;
+            color: white;
+        }
+
+        .unsave-btn {
+            width: 48px;
+            height: 48px;
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--danger-red);
+            border: 1.5px solid rgba(239, 68, 68, 0.2);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .unsave-btn:hover {
+            background: var(--danger-red);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(239, 68, 68, 0.2);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 100px 20px;
+            color: white;
+        }
+
+        .empty-state i {
+            font-size: 6rem;
+            color: var(--primary-accent);
+            opacity: 0.6;
+            margin-bottom: 25px;
+            display: block;
+        }
+
+        .empty-state h3 {
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .footer {
+            background: rgba(15, 23, 42, 0.9) !important;
+            padding: 30px 0 !important;
+            color: #94a3b8 !important;
+            margin-top: auto;
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @media (max-width: 768px) {
+            .posts-grid { grid-template-columns: 1fr; }
+            .page-header h1 { font-size: 2.2rem; }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg">
+        <div class="container">
+            <a class="navbar-brand" href="/">
+                <i class="fas fa-blog"></i>
+            </a>
+            <div class="navbar-nav ml-auto">
+                <a class="nav-link" th:href="@{/}">
+                    <i class="fas fa-home"></i> Home
+                </a>
+                <a class="nav-link" th:href="@{/dashboard}">
+                    <i class="fas fa-th-large"></i> Dashboard
+                </a>
+                <a class="nav-link" href="#" style="color: var(--primary-accent) !important;">
+                    <i class="fas fa-bookmark"></i> Saved Posts
+                </a>
+                <a class="nav-link" th:href="@{/logout}">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container main-container">
+        <div class="page-header">
+            <h1><i class="fas fa-bookmark"></i> Saved Posts</h1>
+            <p>Your curated reading list</p>
+        </div>
+
+        <div th:if="${#lists.isEmpty(posts)}" class="empty-state">
+            <i class="fas fa-bookmark-slash"></i>
+            <h3>Your Reading List is Empty</h3>
+            <p>Browse our blog and save posts for later!</p>
+        </div>
+
+        <div class="posts-grid" th:unless="${#lists.isEmpty(posts)}">
+            <div class="post-card" th:each="post, iterStat : ${posts}">
+                <h3 class="post-title">
+                    <a th:href="@{'/view/' + ${post.id}}" th:text="${post.title}">Post Title</a>
+                </h3>
+                <p class="post-description" th:text="${post.description}">Short description</p>
+                <div class="post-date">
+                    <i class="far fa-calendar-alt"></i>
+                    <span th:text="${#temporals.format(post.createdOn, 'dd MMMM yyyy')}">Date</span>
+                </div>
+                <div class="post-actions">
+                    <a th:href="@{'/view/' + ${post.id}}" class="read-more">
+                        READ MORE <i class="fas fa-arrow-right"></i>
+                    </a>
+                    <form th:action="@{/unsave/{id}(id=${post.id})}" method="post" style="display: inline;">
+                        <button type="submit" class="unsave-btn" onclick="return confirm('Remove from saved posts?');">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="container text-center">
+            <p>Copyright © 2026 ExcelR. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

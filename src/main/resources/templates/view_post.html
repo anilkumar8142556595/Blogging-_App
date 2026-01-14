@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${post.title}">ExcelR Blog</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        /* MATCHING DESIGNER THEME: DEEP INDIGO & LUXE GOLD */
+        :root {
+            --primary-accent: #6366f1;
+            --secondary-accent: #f59e0b;
+            --dark-bg: #0f172a;
+            --card-glass: rgba(255, 255, 255, 0.96);
+            --input-bg: #f8fafc;
+            --text-main: #1e293b;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            font-family: 'Poppins', sans-serif !important;
+            background-color: #0f172a !important;
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.15) 0, transparent 50%), 
+                radial-gradient(at 100% 100%, rgba(245, 158, 11, 0.1) 0, transparent 50%) !important;
+            min-height: 100vh !important;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: url('https://www.transparenttextures.com/patterns/cubes.png');
+            opacity: 0.05;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .navbar {
+            background: rgba(15, 23, 42, 0.8) !important;
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+            padding: 12px 0 !important;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .navbar-brand {
+            font-size: 1.8rem !important;
+            color: #fff !important;
+        }
+
+        .navbar-brand i {
+            color: var(--primary-accent) !important;
+        }
+
+        .nav-link {
+            color: rgba(255, 255, 255, 0.8) !important;
+            font-weight: 500 !important;
+            margin: 0 10px !important;
+            padding: 8px 20px !important;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-link:hover {
+            color: var(--primary-accent) !important;
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .main-container {
+            position: relative;
+            z-index: 1;
+            flex: 1;
+            padding: 60px 20px;
+        }
+
+        .post-card {
+            background: var(--card-glass) !important;
+            backdrop-filter: blur(20px);
+            border-radius: 24px !important;
+            padding: 50px !important;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5) !important;
+            border: 1px solid rgba(255, 255, 255, 0.3) !important;
+            max-width: 900px;
+            margin: 0 auto 30px;
+            animation: slideUp 0.7s cubic-bezier(0.19, 1, 0.22, 1);
+        }
+
+        .post-title {
+            font-size: 2.8rem;
+            font-weight: 800;
+            color: var(--dark-bg);
+            margin-bottom: 15px;
+            letter-spacing: -1px;
+            line-height: 1.2;
+        }
+
+        .post-meta {
+            color: #64748b;
+            font-size: 0.9rem;
+            margin-bottom: 30px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: #f1f5f9;
+            padding: 8px 15px;
+            border-radius: 30px;
+            display: inline-flex;
+        }
+
+        .post-meta i {
+            color: var(--primary-accent);
+        }
+
+        .post-content {
+            color: #334155;
+            line-height: 1.8;
+            font-size: 1.15rem;
+            margin-bottom: 40px;
+        }
+
+        /* Save Post Section Styling */
+        .save-section {
+            margin-top: 40px;
+            padding: 30px;
+            background: #f8fafc;
+            border-radius: 20px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .save-btn, .unsave-btn {
+            border: none !important;
+            padding: 14px 35px !important;
+            border-radius: 12px !important;
+            font-weight: 700 !important;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.3s ease !important;
+        }
+
+        .save-btn {
+            background: #10b981 !important; /* Emerald */
+            color: white !important;
+            box-shadow: 0 10px 15px -3px rgba(16, 185, 129, 0.3) !important;
+        }
+
+        .unsave-btn {
+            background: #64748b !important;
+            color: white !important;
+        }
+
+        .save-btn:hover, .unsave-btn:hover {
+            transform: translateY(-2px);
+            opacity: 0.9;
+        }
+
+        /* Comments Styling */
+        .comments-section {
+            margin-top: 50px;
+            padding-top: 40px;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        .comments-title {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--dark-bg);
+            margin-bottom: 30px;
+        }
+
+        .comments-title i {
+            color: var(--primary-accent);
+        }
+
+        .comment-card {
+            background: #ffffff;
+            border-radius: 16px;
+            padding: 25px;
+            margin-bottom: 20px;
+            border: 1px solid #f1f5f9;
+            border-left: 5px solid var(--primary-accent);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            transition: 0.3s;
+        }
+
+        .comment-author {
+            font-weight: 700;
+            color: var(--dark-bg);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .comment-author i {
+            color: var(--primary-accent);
+        }
+
+        /* Comment Form */
+        .comment-form-card {
+            background: #f8fafc !important;
+            border: 1px solid #e2e8f0 !important;
+            border-radius: 20px !important;
+            padding: 35px !important;
+            margin-top: 40px;
+        }
+
+        .form-group label {
+            font-weight: 600;
+            color: #475569;
+            font-size: 0.85rem;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .form-group input, .form-group textarea {
+            background: #fff !important;
+            border: 2px solid #e2e8f0 !important;
+            border-radius: 12px !important;
+            padding: 12px 18px !important;
+        }
+
+        .form-group input:focus, .form-group textarea:focus {
+            border-color: var(--primary-accent) !important;
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1) !important;
+        }
+
+        .submit-btn {
+            background: var(--dark-bg) !important;
+            border: none !important;
+            border-radius: 12px !important;
+            padding: 14px 40px !important;
+            color: white !important;
+            font-weight: 700 !important;
+            transition: all 0.3s ease !important;
+        }
+
+        .submit-btn:hover {
+            background: var(--primary-accent) !important;
+            transform: translateY(-2px);
+        }
+
+        .no-comment-message {
+            background: #fffbeb;
+            border-left: 5px solid #f59e0b;
+            padding: 15px 20px;
+            border-radius: 12px;
+            color: #92400e;
+            font-weight: 500;
+        }
+
+        .footer {
+            background: rgba(15, 23, 42, 0.9) !important;
+            padding: 30px 0 !important;
+            color: #94a3b8 !important;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg">
+        <div class="container">
+            <a class="navbar-brand" href="/">
+                <i class="fas fa-blog"></i>
+            </a>
+            <div class="navbar-nav ml-auto">
+                <a class="nav-link" th:href="@{/}">
+                    <i class="fas fa-home"></i> Home
+                </a>
+                <a class="nav-link" th:href="@{/register}">
+                    <i class="fas fa-user-plus"></i> Register
+                </a>
+                <a class="nav-link" th:href="@{/login}">
+                    <i class="fas fa-sign-in-alt"></i> Login
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container main-container">
+        <div class="post-card">
+            <h1 class="post-title" th:text="${post.title}">Post Title</h1>
+            <div class="post-meta">
+                <i class="far fa-calendar-alt"></i>
+                <span th:text="${#temporals.format(post.createdOn, 'dd MMMM yyyy')}">Date</span>
+            </div>
+            <div class="post-content" th:utext="${post.content}">Post Content</div>
+
+            <div th:if="${user != null}" class="save-section text-center">
+                <form th:action="@{/save/{id}(id=${post.id})}" method="post" style="display: inline;" 
+                      th:if="${!isSaved}">
+                    <button type="submit" class="save-btn">
+                        <i class="far fa-bookmark"></i> Save for Later
+                    </button>
+                </form>
+                <form th:action="@{/unsave/{id}(id=${post.id})}" method="post" style="display: inline;" 
+                      th:if="${isSaved}">
+                    <button type="submit" class="unsave-btn">
+                        <i class="fas fa-bookmark"></i> Remove from Saved
+                    </button>
+                </form>
+            </div>
+
+            <div class="comments-section">
+                <h3 class="comments-title"><i class="fas fa-comments"></i> Comments</h3>
+                
+                <div th:if="${#lists.isEmpty(comments)}" class="no-comment-message">
+                    <i class="fas fa-info-circle"></i> No comments yet. Be the first to comment!
+                </div>
+
+                <div th:each="comment : ${comments}" class="comment-card">
+                    <div class="comment-author">
+                        <i class="fas fa-user"></i>
+                        <span th:text="${comment.name}">User</span>
+                    </div>
+                    <div class="comment-content" th:text="${comment.content}">Comment Content</div>
+                </div>
+
+                <div th:if="${user != null and user.id != post.user.id}" class="comment-form-card">
+                    <h4 style="margin-bottom: 25px; color: var(--dark-bg); font-weight: 800;"><i class="fas fa-comment-dots"></i> Add a Comment</h4>
+                    <form th:action="@{/comment/{postId}(postId=${post.id})}" th:object="${commentObj}" method="post">
+                        <div class="form-group">
+                            <label><i class="fas fa-user"></i> Name</label>
+                            <input type="text" th:field="*{name}" placeholder="Your name" required />
+                        </div>
+                        <div class="form-group">
+                            <label><i class="fas fa-envelope"></i> Email</label>
+                            <input type="email" th:field="*{email}" placeholder="Your email" required />
+                        </div>
+                        <div class="form-group">
+                            <label><i class="fas fa-comment"></i> Comment</label>
+                            <textarea th:field="*{content}" placeholder="Write your comment..." rows="4" required></textarea>
+                        </div>
+                        <button type="submit" class="submit-btn">
+                            <i class="fas fa-paper-plane"></i> Submit Comment
+                        </button>
+                    </form>
+                </div>
+
+                <div th:if="${user != null and user.id == post.user.id}" class="no-comment-message" style="margin-top: 20px;">
+                    <i class="fas fa-info-circle"></i> You cannot comment on your own post.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="container text-center">
+            <p>Copyright © 2026 ExcelR. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - ExcelR Blog</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        /* ADVANCED DESIGNER THEME: DEEP SLATE & HOLOGRAPHIC INDIGO */
+        :root {
+            --primary-accent: #6366f1;
+            --secondary-accent: #fbbf24; /* Richer Gold */
+            --dark-bg: #0f172a;
+            --card-glass: rgba(255, 255, 255, 0.96);
+            --input-bg: #f8fafc;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            font-family: 'Poppins', sans-serif !important;
+            background-color: var(--dark-bg) !important;
+            /* Animated Mesh Background */
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.18) 0, transparent 50%), 
+                radial-gradient(at 100% 0%, rgba(251, 191, 36, 0.08) 0, transparent 50%),
+                radial-gradient(at 50% 100%, rgba(99, 102, 241, 0.1) 0, transparent 50%) !important;
+            min-height: 100vh !important;
+            position: relative;
+            overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Ambient subtle texture overlay */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: url('https://www.transparenttextures.com/patterns/carbon-fibre.png');
+            opacity: 0.03;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .navbar {
+            background: rgba(15, 23, 42, 0.8) !important;
+            backdrop-filter: blur(15px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+            padding: 15px 0 !important;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .navbar-brand {
+            font-size: 1.8rem !important;
+            color: #fff !important;
+            font-weight: 700 !important;
+        }
+
+        .navbar-brand i {
+            color: var(--primary-accent) !important;
+            filter: drop-shadow(0 0 5px rgba(99, 102, 241, 0.5));
+        }
+
+        .nav-link {
+            color: rgba(255, 255, 255, 0.8) !important;
+            font-weight: 500 !important;
+            padding: 8px 20px !important;
+            border-radius: 12px;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .nav-link:hover {
+            color: #fff !important;
+            background: rgba(255, 255, 255, 0.08);
+            transform: translateY(-2px);
+        }
+
+        .register-container {
+            position: relative;
+            z-index: 1;
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 60px 20px;
+        }
+
+        .register-card {
+            background: var(--card-glass) !important;
+            backdrop-filter: blur(20px);
+            border-radius: 30px !important;
+            padding: 50px !important;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6) !important;
+            border: 1px solid rgba(255, 255, 255, 0.4) !important;
+            width: 100%;
+            max-width: 500px;
+            animation: cardEntrance 0.8s cubic-bezier(0.2, 1, 0.2, 1);
+        }
+
+        .register-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .register-header i {
+            font-size: 3.5rem;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, var(--primary-accent), #a5b4fc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: inline-block;
+        }
+
+        .register-header h2 {
+            color: var(--dark-bg) !important;
+            font-weight: 800 !important;
+            letter-spacing: -1px;
+            font-size: 2.2rem !important;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+            position: relative;
+        }
+
+        .form-group label {
+            font-weight: 700;
+            color: #64748b;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .form-group .input-icon {
+            position: absolute;
+            left: 20px;
+            top: 48px;
+            color: #94a3b8;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            z-index: 5;
+        }
+
+        .form-group input {
+            width: 100% !important;
+            padding: 15px 15px 15px 55px !important;
+            border: 2px solid #f1f5f9 !important;
+            border-radius: 15px !important;
+            background: var(--input-bg) !important;
+            font-size: 0.95rem !important;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+        }
+
+        .form-group input:focus {
+            border-color: var(--primary-accent) !important;
+            background: #fff !important;
+            box-shadow: 0 10px 15px -3px rgba(99, 102, 241, 0.1) !important;
+            outline: none !important;
+            transform: scale(1.01);
+        }
+
+        .form-group input:focus + .input-icon,
+        .form-group input:focus ~ .input-icon {
+            color: var(--primary-accent);
+            transform: scale(1.1);
+        }
+
+        .register-btn {
+            width: 100% !important;
+            background: var(--dark-bg) !important;
+            border: none !important;
+            border-radius: 15px !important;
+            padding: 18px !important;
+            color: white !important;
+            font-weight: 700 !important;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            transition: all 0.4s ease !important;
+            margin-top: 10px;
+            cursor: pointer;
+        }
+
+        .register-btn:hover {
+            background: var(--primary-accent) !important;
+            transform: translateY(-3px);
+            box-shadow: 0 20px 25px -5px rgba(99, 102, 241, 0.3) !important;
+        }
+
+        .login-link {
+            text-align: center;
+            margin-top: 30px;
+            border-top: 1px solid #f1f5f9;
+            padding-top: 25px;
+        }
+
+        .login-link p { color: #64748b !important; }
+
+        .login-link a {
+            color: var(--primary-accent) !important;
+            font-weight: 700 !important;
+            text-decoration: none !important;
+            transition: 0.3s;
+        }
+
+        .login-link a:hover { color: var(--secondary-accent) !important; }
+
+        .footer {
+            background: rgba(15, 23, 42, 0.95) !important;
+            padding: 35px 0 !important;
+            color: #94a3b8 !important;
+            border-top: 1px solid rgba(255, 255, 255, 0.05) !important;
+        }
+
+        @keyframes cardEntrance {
+            from { opacity: 0; transform: translateY(60px) scale(0.95); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg">
+        <div class="container">
+            <a class="navbar-brand" href="/">
+                <i class="fas fa-blog"></i>
+            </a>
+            <div class="navbar-nav ml-auto">
+                <a class="nav-link" th:href="@{/}"><i class="fas fa-home"></i> Home</a>
+                <a class="nav-link" href="#" style="color: var(--primary-accent) !important;"><i class="fas fa-user-plus"></i> Register</a>
+                <a class="nav-link" th:href="@{/login}"><i class="fas fa-sign-in-alt"></i> Login</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="register-container">
+        <div class="register-card">
+            <div class="register-header">
+                <i class="fas fa-user-plus"></i>
+                <h2>Create Account</h2>
+                <p>Join us and start sharing your thoughts</p>
+            </div>
+
+            <form th:action="@{/register}" th:object="${user}" method="post">
+                <div class="form-group">
+                    <label>First Name</label>
+                    <i class="fas fa-user input-icon"></i>
+                    <input type="text" th:field="*{fname}" placeholder="Enter first name" required />
+                </div>
+
+                <div class="form-group">
+                    <label>Last Name</label>
+                    <i class="fas fa-id-badge input-icon"></i>
+                    <input type="text" th:field="*{lname}" placeholder="Enter last name" required />
+                </div>
+
+                <div class="form-group">
+                    <label>Email Address</label>
+                    <i class="fas fa-envelope input-icon"></i>
+                    <input type="email" th:field="*{email}" placeholder="name@example.com" required />
+                </div>
+
+                <div class="form-group">
+                    <label>Password</label>
+                    <i class="fas fa-lock input-icon"></i>
+                    <input type="password" th:field="*{pwd}" placeholder="Create password" required />
+                </div>
+
+                <button type="submit" class="register-btn">Register</button>
+            </form>
+
+            <div class="login-link">
+                <p>Already registered? <a th:href="@{/login}">Login here <i class="fas fa-arrow-right ml-1"></i></a></p>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer text-center">
+        <div class="container">
+            <p>© 2026 ExcelR Blog. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
