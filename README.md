@@ -27,3 +27,27 @@ Clean navigation (Home, Register, Login, Dashboard)
 Custom CSS styling
 <img width="931" height="631" alt="image" src="https://github.com/user-attachments/assets/76d4ff3d-2ead-48fd-8c60-69154bb317c4" />
 
+
+
+4️⃣ Run the Application
+
+Open project in Spring Tool Suite
+
+Run JavaRealTimeMiniProject3Application.java
+
+Application will start at:
+
+http://localhost:8080
+
+| URL          | Description           |
+| ------------ | --------------------- |
+| `/`          | Home page (All posts) |
+| `/register`  | User registration     |
+| `/login`     | User login            |
+| `/dashboard` | User dashboard        |
+| `/create`    | Create new post       |
+| `/view/{id}` | View post & comments  |
+| `/comments`  | View comments         |
+| `/logout`    | Logout                |
+
+
